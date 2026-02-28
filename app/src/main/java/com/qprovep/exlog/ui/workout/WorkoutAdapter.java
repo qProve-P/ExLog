@@ -18,9 +18,7 @@ public class WorkoutAdapter extends ListAdapter<WorkoutTemplate, WorkoutAdapter.
     public interface OnWorkoutClickListener {
         void onWorkoutClick(WorkoutTemplate workout);
 
-        void onWorkoutStartClick(WorkoutTemplate workout);
-
-        void onWorkoutLongClick(WorkoutTemplate workout);
+        void onWorkoutDeleteClick(WorkoutTemplate workout);
     }
 
     private final OnWorkoutClickListener listener;
@@ -65,7 +63,7 @@ public class WorkoutAdapter extends ListAdapter<WorkoutTemplate, WorkoutAdapter.
             countText = itemView.findViewById(R.id.workout_exercise_count);
 
             View btnEdit = itemView.findViewById(R.id.btn_edit_workout);
-            View btnStart = itemView.findViewById(R.id.btn_start_session);
+            View btnDelete = itemView.findViewById(R.id.btn_delete_workout);
 
             btnEdit.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
@@ -74,25 +72,17 @@ public class WorkoutAdapter extends ListAdapter<WorkoutTemplate, WorkoutAdapter.
                 }
             });
 
-            btnStart.setOnClickListener(v -> {
+            btnDelete.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION) {
-                    listener.onWorkoutStartClick(getItem(pos));
+                    listener.onWorkoutDeleteClick(getItem(pos));
                 }
-            });
-
-            itemView.setOnLongClickListener(v -> {
-                int pos = getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION) {
-                    listener.onWorkoutLongClick(getItem(pos));
-                }
-                return true;
             });
         }
 
         void bind(WorkoutTemplate workout) {
             nameText.setText(workout.getName());
-            countText.setText("Tap to edit");
+            countText.setText("Tap Edit to modify");
         }
     }
 }

@@ -66,14 +66,7 @@ public class WorkoutListFragment extends Fragment implements WorkoutAdapter.OnWo
     }
 
     @Override
-    public void onWorkoutStartClick(WorkoutTemplate workout) {
-        Bundle args = new Bundle();
-        args.putInt("startWorkoutId", workout.getId());
-        Navigation.findNavController(requireView()).navigate(R.id.sessionFragment, args);
-    }
-
-    @Override
-    public void onWorkoutLongClick(WorkoutTemplate workout) {
+    public void onWorkoutDeleteClick(WorkoutTemplate workout) {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.confirm_delete)
                 .setMessage(workout.getName())

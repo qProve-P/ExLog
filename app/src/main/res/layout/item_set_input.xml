@@ -15,26 +15,18 @@
         android:textSize="14sp"
         android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/edit_weight"
+    <NumberPicker
+        android:id="@+id/picker_weight"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:layout_weight="2"
-        android:inputType="numberDecimal"
-        android:textAlignment="center"
-        android:background="@android:drawable/editbox_background_normal"
-        android:padding="8dp"
         android:layout_marginHorizontal="4dp" />
 
-    <EditText
-        android:id="@+id/edit_reps"
+    <NumberPicker
+        android:id="@+id/picker_reps"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:layout_weight="2"
-        android:inputType="number"
-        android:textAlignment="center"
-        android:background="@android:drawable/editbox_background_normal"
-        android:padding="8dp"
         android:layout_marginHorizontal="4dp" />
 
     <com.google.android.material.checkbox.MaterialCheckBox

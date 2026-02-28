@@ -4,75 +4,113 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="8dp"
-    android:layout_marginVertical="8dp"
+    android:layout_marginVertical="4dp"
     app:cardElevation="2dp"
     app:cardCornerRadius="12dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <TextView
-            android:id="@+id/exercise_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorPrimary"
-            android:layout_marginBottom="12dp" />
+        android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/exercise_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingBottom="8dp">
+            android:gravity="center_vertical"
+            android:padding="16dp">
 
             <TextView
+                android:id="@+id/exercise_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="SET"
+                android:textSize="18sp"
                 android:textStyle="bold"
-                android:textSize="12sp"
-                android:textAlignment="center" />
+                android:textColor="?attr/colorPrimary" />
 
             <TextView
-                android:layout_width="0dp"
+                android:id="@+id/done_indicator"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="WEIGHT"
+                android:layout_marginEnd="8dp"
+                android:text="✓"
+                android:textSize="20sp"
                 android:textStyle="bold"
-                android:textSize="12sp"
-                android:textAlignment="center" />
+                android:textColor="?attr/colorPrimary"
+                android:visibility="gone" />
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="REPS"
-                android:textStyle="bold"
-                android:textSize="12sp"
-                android:textAlignment="center" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="DONE"
-                android:textStyle="bold"
-                android:textSize="12sp"
-                android:textAlignment="center" />
+            <ImageView
+                android:id="@+id/expand_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/arrow_down_float"
+                android:contentDescription="Expand" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/sets_container"
+            android:id="@+id/exercise_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
-            
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="12dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="SET"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="WEIGHT"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="REPS"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="DONE"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:textAlignment="center" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sets_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

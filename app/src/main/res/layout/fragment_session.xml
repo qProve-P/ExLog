@@ -12,16 +12,32 @@
         android:background="?attr/colorPrimary"
         app:titleTextColor="?attr/colorOnPrimary" />
 
-    <TextView
-        android:id="@+id/session_timer"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="00:00"
-        android:textAlignment="center"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:paddingTop="16dp"
-        android:paddingBottom="8dp" />
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingTop="12dp"
+        android:paddingBottom="4dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pause_resume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pause"
+            app:icon="@android:drawable/ic_media_pause"
+            style="@style/Widget.Material3.Button.TonalButton" />
+
+        <TextView
+            android:id="@+id/session_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="24dp" />
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/session_exercises_recycler"
@@ -39,5 +55,5 @@
         android:text="@string/finish_session"
         app:icon="@android:drawable/ic_menu_save"
         style="@style/Widget.Material3.Button" />
-        
+
 </LinearLayout>

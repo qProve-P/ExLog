@@ -20,9 +20,7 @@ import com.qprovep.exlog.data.relation.WorkoutWithExercises;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -38,8 +36,11 @@ public class SessionViewModel extends AndroidViewModel {
             new ArrayList<>());
 
     private long startTimeMillis = 0;
+    private long accumulatedMs = 0;
     private final MutableLiveData<Long> elapsedTime = new MutableLiveData<>(0L);
+    private final MutableLiveData<Boolean> timerPaused = new MutableLiveData<>(false);
     private boolean isTimerRunning = false;
+    private boolean isPaused = false;
     private Thread timerThread;
 
     public SessionViewModel(@NonNull Application application) {
@@ -60,6 +61,10 @@ public class SessionViewModel extends AndroidViewModel {
 
     public LiveData<Long> getElapsedTime() {
         return elapsedTime;
+    }
+
+    public LiveData<Boolean> isTimerPaused() {
+        return timerPaused;
     }
 
     public void startSession(int workoutId) {
@@ -84,16 +89,38 @@ public class SessionViewModel extends AndroidViewModel {
             }
             sessionExercises.postValue(entries);
 
+            accumulatedMs = 0;
+            isPaused = false;
+            timerPaused.postValue(false);
             startTimeMillis = SystemClock.elapsedRealtime();
             isTimerRunning = true;
             startTimerThread();
         });
     }
 
+    public void togglePause() {
+        if (!isTimerRunning)
+            return;
+
+        if (isPaused) {
+            startTimeMillis = SystemClock.elapsedRealtime();
+            isPaused = false;
+            timerPaused.postValue(false);
+            startTimerThread();
+        } else {
+            accumulatedMs += SystemClock.elapsedRealtime() - startTimeMillis;
+            isPaused = true;
+            timerPaused.postValue(true);
+            if (timerThread != null) {
+                timerThread.interrupt();
+            }
+        }
+    }
+
     private void startTimerThread() {
         timerThread = new Thread(() -> {
-            while (isTimerRunning) {
-                long elapsed = SystemClock.elapsedRealtime() - startTimeMillis;
+            while (isTimerRunning && !isPaused) {
+                long elapsed = accumulatedMs + (SystemClock.elapsedRealtime() - startTimeMillis);
                 elapsedTime.postValue(elapsed);
                 try {
                     Thread.sleep(1000);
@@ -114,8 +141,6 @@ public class SessionViewModel extends AndroidViewModel {
         set.weight = weight;
         set.reps = reps;
         set.isCompleted = isCompleted;
-
-        sessionExercises.postValue(current);
     }
 
     public void finishSession(String notes) {
@@ -127,7 +152,13 @@ public class SessionViewModel extends AndroidViewModel {
             timerThread.interrupt();
         }
 
-        long durationMs = SystemClock.elapsedRealtime() - startTimeMillis;
+        long durationMs;
+        if (isPaused) {
+            durationMs = accumulatedMs;
+        } else {
+            durationMs = accumulatedMs + (SystemClock.elapsedRealtime() - startTimeMillis);
+        }
+
         WorkoutTemplate template = currentWorkout.getValue();
         List<SessionExerciseEntry> entries = sessionExercises.getValue();
 
@@ -152,9 +183,12 @@ public class SessionViewModel extends AndroidViewModel {
                 setLogDao.insertAll(logsToSave);
             }
 
+            isPaused = false;
+            accumulatedMs = 0;
             currentWorkout.postValue(null);
             sessionExercises.postValue(new ArrayList<>());
             elapsedTime.postValue(0L);
+            timerPaused.postValue(false);
         });
     }
 

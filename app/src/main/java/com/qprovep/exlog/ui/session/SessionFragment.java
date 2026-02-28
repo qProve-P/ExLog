@@ -46,6 +46,7 @@ public class SessionFragment extends Fragment {
         timerText = view.findViewById(R.id.session_timer);
         RecyclerView recyclerView = view.findViewById(R.id.session_exercises_recycler);
         MaterialButton finishBtn = view.findViewById(R.id.btn_finish_session);
+        MaterialButton pauseResumeBtn = view.findViewById(R.id.btn_pause_resume);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new SessionAdapter(viewModel);
@@ -71,6 +72,18 @@ public class SessionFragment extends Fragment {
             long secs = seconds % 60;
             timerText.setText(String.format(Locale.getDefault(), "%02d:%02d", mins, secs));
         });
+
+        viewModel.isTimerPaused().observe(getViewLifecycleOwner(), paused -> {
+            if (paused != null && paused) {
+                pauseResumeBtn.setText("Resume");
+                pauseResumeBtn.setIconResource(android.R.drawable.ic_media_play);
+            } else {
+                pauseResumeBtn.setText("Pause");
+                pauseResumeBtn.setIconResource(android.R.drawable.ic_media_pause);
+            }
+        });
+
+        pauseResumeBtn.setOnClickListener(v -> viewModel.togglePause());
 
         finishBtn.setOnClickListener(v -> {
             WorkoutTemplate current = viewModel.getCurrentWorkout().getValue();

@@ -43,12 +43,12 @@
                 style="@style/Widget.Material3.Button.TextButton" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_start_session"
+                android:id="@+id/btn_delete_workout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/start_session"
-                app:icon="@android:drawable/ic_media_play"
-                style="@style/Widget.Material3.Button.TonalButton" />
+                android:text="@string/delete"
+                app:icon="@android:drawable/ic_menu_delete"
+                style="@style/Widget.Material3.Button.TextButton" />
 
         </LinearLayout>
 
