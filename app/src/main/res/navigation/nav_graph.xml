@@ -3,41 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/exerciseListFragment">
-
-    <fragment
-        android:id="@+id/exerciseListFragment"
-        android:name="com.qprovep.exlog.ui.exercise.ExerciseListFragment"
-        android:label="@string/nav_exercises"
-        tools:layout="@layout/fragment_exercise_list" />
-
-    <fragment
-        android:id="@+id/workoutListFragment"
-        android:name="com.qprovep.exlog.ui.workout.WorkoutListFragment"
-        android:label="@string/nav_workouts"
-        tools:layout="@layout/fragment_workout_list">
-
-        <action
-            android:id="@+id/action_workoutList_to_workoutDetail"
-            app:destination="@id/workoutDetailFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/workoutDetailFragment"
-        android:name="com.qprovep.exlog.ui.workout.WorkoutDetailFragment"
-        android:label="@string/edit_workout"
-        tools:layout="@layout/fragment_workout_detail">
-
-        <argument
-            android:name="workoutId"
-            app:argType="integer"
-            android:defaultValue="-1" />
-    </fragment>
+    app:startDestination="@id/sessionStartFragment">
 
     <fragment
         android:id="@+id/sessionStartFragment"
         android:name="com.qprovep.exlog.ui.session.SessionStartFragment"
-        android:label="@string/start_session"
+        android:label="@string/nav_start"
         tools:layout="@layout/fragment_session_start">
 
         <action
@@ -59,7 +30,7 @@
     <fragment
         android:id="@+id/historyFragment"
         android:name="com.qprovep.exlog.ui.history.HistoryFragment"
-        android:label="@string/session_history"
+        android:label="@string/nav_history"
         tools:layout="@layout/fragment_history">
 
         <action
@@ -76,6 +47,29 @@
         <argument
             android:name="sessionId"
             app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/templatesFragment"
+        android:name="com.qprovep.exlog.ui.templates.TemplatesFragment"
+        android:label="@string/nav_templates"
+        tools:layout="@layout/fragment_templates">
+
+        <action
+            android:id="@+id/action_templates_to_workoutDetail"
+            app:destination="@id/workoutDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/workoutDetailFragment"
+        android:name="com.qprovep.exlog.ui.workout.WorkoutDetailFragment"
+        android:label="@string/edit_workout"
+        tools:layout="@layout/fragment_workout_detail">
+
+        <argument
+            android:name="workoutId"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
 
 </navigation>

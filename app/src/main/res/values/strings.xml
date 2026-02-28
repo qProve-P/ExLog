@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">ExLog</string>
-    <string name="nav_exercises">Exercises</string>
-    <string name="nav_workouts">Workouts</string>
+    <string name="nav_templates">Templates</string>
     <string name="nav_start">Start</string>
     <string name="nav_history">History</string>
+    <string name="tab_exercises">Exercises</string>
+    <string name="tab_workouts">Workouts</string>
     <string name="add_exercise">Add Exercise</string>
     <string name="edit_exercise">Edit Exercise</string>
     <string name="exercise_name">Exercise Name</string>
