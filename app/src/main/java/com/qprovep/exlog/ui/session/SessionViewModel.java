@@ -192,6 +192,19 @@ public class SessionViewModel extends AndroidViewModel {
         });
     }
 
+    public void discardSession() {
+        isTimerRunning = false;
+        isPaused = false;
+        if (timerThread != null) {
+            timerThread.interrupt();
+        }
+        accumulatedMs = 0;
+        currentWorkout.postValue(null);
+        sessionExercises.postValue(new ArrayList<>());
+        elapsedTime.postValue(0L);
+        timerPaused.postValue(false);
+    }
+
     @Override
     protected void onCleared() {
         super.onCleared();

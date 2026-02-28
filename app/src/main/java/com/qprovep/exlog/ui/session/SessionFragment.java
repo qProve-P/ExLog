@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -51,6 +52,20 @@ public class SessionFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new SessionAdapter(viewModel);
         recyclerView.setAdapter(adapter);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(
+                getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        WorkoutTemplate current = viewModel.getCurrentWorkout().getValue();
+                        if (current != null) {
+                            showDiscardDialog(view);
+                        } else {
+                            setEnabled(false);
+                            requireActivity().getOnBackPressedDispatcher().onBackPressed();
+                        }
+                    }
+                });
 
         viewModel.getCurrentWorkout().observe(getViewLifecycleOwner(), template -> {
             if (template != null) {
@@ -98,7 +113,7 @@ public class SessionFragment extends Fragment {
                     .setPositiveButton("Finish", (dialog, which) -> {
                         viewModel.finishSession("");
                         Toast.makeText(requireContext(), "Session saved!", Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(view).popBackStack(R.id.templatesFragment, false);
+                        Navigation.findNavController(view).popBackStack();
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .show();
@@ -111,5 +126,22 @@ public class SessionFragment extends Fragment {
                 getArguments().remove("startWorkoutId");
             }
         }
+    }
+
+    private void showDiscardDialog(View view) {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Leave Session?")
+                .setMessage("You have an active session. Do you want to discard it?")
+                .setPositiveButton("Discard", (dialog, which) -> {
+                    viewModel.discardSession();
+                    Navigation.findNavController(view).popBackStack();
+                })
+                .setNeutralButton("Save & Leave", (dialog, which) -> {
+                    viewModel.finishSession("");
+                    Toast.makeText(requireContext(), "Session saved!", Toast.LENGTH_SHORT).show();
+                    Navigation.findNavController(view).popBackStack();
+                })
+                .setNegativeButton("Stay", null)
+                .show();
     }
 }
