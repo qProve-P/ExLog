@@ -31,4 +31,7 @@ public interface ExerciseTemplateDao {
 
     @Query("SELECT * FROM exercise_templates WHERE name LIKE '%' || :query || '%' ORDER BY name ASC")
     LiveData<List<ExerciseTemplate>> search(String query);
+
+    @Query("SELECT DISTINCT category FROM exercise_templates WHERE category IS NOT NULL AND category != '' ORDER BY category ASC")
+    LiveData<List<String>> getAllCategories();
 }

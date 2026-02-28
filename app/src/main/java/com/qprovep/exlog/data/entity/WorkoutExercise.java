@@ -35,7 +35,6 @@ public class WorkoutExercise {
         this.targetReps = targetReps;
     }
 
-    // Getters and setters
     public int getId() {
         return id;
     }

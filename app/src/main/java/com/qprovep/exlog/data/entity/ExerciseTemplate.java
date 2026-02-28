@@ -10,16 +10,17 @@ public class ExerciseTemplate {
     private int id;
 
     private String name;
+    private String category;
     private String note;
     private String exampleLink;
 
-    public ExerciseTemplate(String name, String note, String exampleLink) {
+    public ExerciseTemplate(String name, String category, String note, String exampleLink) {
         this.name = name;
+        this.category = category;
         this.note = note;
         this.exampleLink = exampleLink;
     }
 
-    // Getters and setters
     public int getId() {
         return id;
     }
@@ -34,6 +35,14 @@ public class ExerciseTemplate {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getNote() {

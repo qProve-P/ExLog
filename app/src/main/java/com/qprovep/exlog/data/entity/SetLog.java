@@ -31,7 +31,6 @@ public class SetLog {
         this.weight = weight;
     }
 
-    // Getters and setters
     public int getId() {
         return id;
     }

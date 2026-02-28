@@ -27,7 +27,6 @@ public class Session {
         this.notes = notes;
     }
 
-    // Getters and setters
     public int getId() {
         return id;
     }

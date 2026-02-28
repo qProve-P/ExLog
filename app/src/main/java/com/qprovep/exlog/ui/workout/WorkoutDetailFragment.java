@@ -1,22 +1,203 @@
 package com.qprovep.exlog.ui.workout;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.qprovep.exlog.R;
+import com.qprovep.exlog.data.entity.ExerciseTemplate;
+import com.qprovep.exlog.data.entity.WorkoutExercise;
+import com.qprovep.exlog.data.entity.WorkoutTemplate;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class WorkoutDetailFragment extends Fragment {
+
+    private WorkoutViewModel viewModel;
+    private WorkoutExerciseEditAdapter exerciseAdapter;
+    private EditText nameEdit;
+    private int workoutId = -1;
+    private WorkoutTemplate existingWorkout;
+    private List<ExerciseTemplate> allExercisesCached;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_workout_detail, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        viewModel = new ViewModelProvider(this).get(WorkoutViewModel.class);
+
+        nameEdit = view.findViewById(R.id.edit_workout_name);
+        RecyclerView recyclerView = view.findViewById(R.id.workout_exercises_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        exerciseAdapter = new WorkoutExerciseEditAdapter();
+        recyclerView.setAdapter(exerciseAdapter);
+
+        MaterialButton btnAddExercise = view.findViewById(R.id.btn_add_exercise);
+        MaterialButton btnSave = view.findViewById(R.id.btn_save_workout);
+
+        viewModel.getAllExercises().observe(getViewLifecycleOwner(), exercises -> {
+            allExercisesCached = exercises;
+        });
+
+        if (getArguments() != null) {
+            workoutId = getArguments().getInt("workoutId", -1);
+        }
+
+        if (workoutId != -1) {
+            viewModel.getWorkoutWithExercises(workoutId).observe(getViewLifecycleOwner(), data -> {
+                if (data == null)
+                    return;
+
+                existingWorkout = data.workoutTemplate;
+                nameEdit.setText(existingWorkout.getName());
+
+                if (exerciseAdapter.getEntries().isEmpty() && data.exercises != null) {
+                    List<WorkoutExerciseEditAdapter.ExerciseEntry> entries = new ArrayList<>();
+                    for (var weWithTemplate : data.exercises) {
+                        entries.add(new WorkoutExerciseEditAdapter.ExerciseEntry(
+                                weWithTemplate.exerciseTemplate,
+                                weWithTemplate.workoutExercise.getReferenceWeight(),
+                                weWithTemplate.workoutExercise.getTargetSets(),
+                                weWithTemplate.workoutExercise.getTargetReps()));
+                    }
+                    exerciseAdapter.setEntries(entries);
+                }
+            });
+        }
+
+        btnAddExercise.setOnClickListener(v -> showExercisePicker());
+        btnSave.setOnClickListener(v -> saveWorkout());
+    }
+
+    private void showExercisePicker() {
+        if (allExercisesCached == null || allExercisesCached.isEmpty()) {
+            new MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.pick_exercises)
+                    .setMessage(R.string.no_exercises)
+                    .setPositiveButton(R.string.cancel, null)
+                    .show();
+            return;
+        }
+
+        View dialogView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.dialog_exercise_picker, null);
+
+        EditText searchEdit = dialogView.findViewById(R.id.search_exercises);
+        RecyclerView pickerRecycler = dialogView.findViewById(R.id.exercise_picker_recycler);
+        pickerRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        ExercisePickerAdapter pickerAdapter = new ExercisePickerAdapter();
+
+        Set<Integer> preSelected = new HashSet<>();
+        for (WorkoutExerciseEditAdapter.ExerciseEntry entry : exerciseAdapter.getEntries()) {
+            preSelected.add(entry.exercise.getId());
+        }
+
+        pickerAdapter.setExercises(allExercisesCached, preSelected);
+        pickerRecycler.setAdapter(pickerAdapter);
+
+        searchEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                pickerAdapter.filter(s.toString());
+            }
+        });
+
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.pick_exercises)
+                .setView(dialogView)
+                .setPositiveButton(R.string.save, (dialog, which) -> {
+                    Set<Integer> selectedIds = pickerAdapter.getSelectedIds();
+                    applySelectedExercises(selectedIds);
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void applySelectedExercises(Set<Integer> selectedIds) {
+        Map<Integer, WorkoutExerciseEditAdapter.ExerciseEntry> existingMap = new HashMap<>();
+        for (WorkoutExerciseEditAdapter.ExerciseEntry entry : exerciseAdapter.getEntries()) {
+            existingMap.put(entry.exercise.getId(), entry);
+        }
+
+        List<WorkoutExerciseEditAdapter.ExerciseEntry> newEntries = new ArrayList<>();
+        for (ExerciseTemplate ex : allExercisesCached) {
+            if (selectedIds.contains(ex.getId())) {
+                WorkoutExerciseEditAdapter.ExerciseEntry existing = existingMap.get(ex.getId());
+                if (existing != null) {
+                    newEntries.add(existing);
+                } else {
+                    newEntries.add(new WorkoutExerciseEditAdapter.ExerciseEntry(ex, 0, 3, 10));
+                }
+            }
+        }
+        exerciseAdapter.setEntries(newEntries);
+    }
+
+    private void saveWorkout() {
+        String name = nameEdit.getText().toString().trim();
+        if (name.isEmpty()) {
+            nameEdit.setError("Name required");
+            return;
+        }
+
+        List<WorkoutExerciseEditAdapter.ExerciseEntry> entries = exerciseAdapter.getEntries();
+        List<WorkoutExercise> workoutExercises = new ArrayList<>();
+
+        for (int i = 0; i < entries.size(); i++) {
+            WorkoutExerciseEditAdapter.ExerciseEntry e = entries.get(i);
+            workoutExercises.add(new WorkoutExercise(
+                    0,
+                    e.exercise.getId(),
+                    i,
+                    e.referenceWeight,
+                    e.targetSets,
+                    e.targetReps));
+        }
+
+        if (existingWorkout != null) {
+            existingWorkout.setName(name);
+            viewModel.updateWorkout(existingWorkout, workoutExercises);
+        } else {
+            WorkoutTemplate newWorkout = new WorkoutTemplate(name);
+            viewModel.insertWorkout(newWorkout, workoutExercises, null);
+        }
+
+        Navigation.findNavController(requireView()).popBackStack();
     }
 }

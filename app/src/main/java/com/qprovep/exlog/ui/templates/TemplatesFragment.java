@@ -35,7 +35,6 @@ public class TemplatesFragment extends Fragment {
         exerciseFragment = new ExerciseListFragment();
         workoutFragment = new WorkoutListFragment();
 
-        // Show exercises by default
         if (savedInstanceState == null) {
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.templates_container, exerciseFragment)

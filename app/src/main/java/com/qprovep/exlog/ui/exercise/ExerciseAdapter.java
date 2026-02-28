@@ -37,6 +37,7 @@ public class ExerciseAdapter extends ListAdapter<ExerciseTemplate, ExerciseAdapt
         @Override
         public boolean areContentsTheSame(@NonNull ExerciseTemplate oldItem, @NonNull ExerciseTemplate newItem) {
             return oldItem.getName().equals(newItem.getName())
+                    && String.valueOf(oldItem.getCategory()).equals(String.valueOf(newItem.getCategory()))
                     && String.valueOf(oldItem.getNote()).equals(String.valueOf(newItem.getNote()));
         }
     };
@@ -82,8 +83,17 @@ public class ExerciseAdapter extends ListAdapter<ExerciseTemplate, ExerciseAdapt
 
         void bind(ExerciseTemplate exercise) {
             nameText.setText(exercise.getName());
+            String subtitle = "";
+            if (exercise.getCategory() != null && !exercise.getCategory().isEmpty()) {
+                subtitle = exercise.getCategory();
+            }
             if (exercise.getNote() != null && !exercise.getNote().isEmpty()) {
-                noteText.setText(exercise.getNote());
+                if (!subtitle.isEmpty())
+                    subtitle += " · ";
+                subtitle += exercise.getNote();
+            }
+            if (!subtitle.isEmpty()) {
+                noteText.setText(subtitle);
                 noteText.setVisibility(View.VISIBLE);
             } else {
                 noteText.setVisibility(View.GONE);

@@ -3,15 +3,15 @@ package com.qprovep.exlog.data.entity;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "workout_templates")
-public class WorkoutTemplate {
+@Entity(tableName = "categories")
+public class Category {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
 
     private String name;
 
-    public WorkoutTemplate(String name) {
+    public Category(String name) {
         this.name = name;
     }
 

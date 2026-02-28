@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Set up Navigation
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
         NavController navController = navHostFragment.getNavController();
