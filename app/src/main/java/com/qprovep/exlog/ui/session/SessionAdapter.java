@@ -1,5 +1,6 @@
 package com.qprovep.exlog.ui.session;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.qprovep.exlog.R;
+import com.qprovep.exlog.data.entity.ExerciseTemplate;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,6 +27,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
     private List<SessionViewModel.SessionExerciseEntry> exercises = new ArrayList<>();
     private final SessionViewModel viewModel;
     private final Set<Integer> expandedPositions = new HashSet<>();
+    private final Set<Integer> infoOpenPositions = new HashSet<>();
     private boolean firstBindDone = false;
 
     private static final float WEIGHT_STEP = 0.5f;
@@ -84,22 +88,56 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
         return index * WEIGHT_STEP;
     }
 
+    private boolean areAllSetsDone(SessionViewModel.SessionExerciseEntry entry) {
+        if (entry.sets.isEmpty())
+            return false;
+        for (SessionViewModel.SetEntry set : entry.sets) {
+            if (!set.isCompleted)
+                return false;
+        }
+        return true;
+    }
+
+    private void autoAdvance(int currentExerciseIndex) {
+        expandedPositions.remove(currentExerciseIndex);
+
+        for (int next = currentExerciseIndex + 1; next < exercises.size(); next++) {
+            if (!areAllSetsDone(exercises.get(next))) {
+                expandedPositions.add(next);
+                notifyItemChanged(currentExerciseIndex);
+                notifyItemChanged(next);
+                return;
+            }
+        }
+        notifyItemChanged(currentExerciseIndex);
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView nameText;
         private final ImageView expandIcon;
         private final TextView doneIndicator;
+        private final MaterialButton btnInfo;
         private final LinearLayout header;
         private final LinearLayout content;
         private final LinearLayout setsContainer;
+        private final LinearLayout infoSection;
+        private final TextView infoCategory;
+        private final TextView infoNote;
+        private final TextView infoLink;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             nameText = itemView.findViewById(R.id.exercise_name);
             expandIcon = itemView.findViewById(R.id.expand_icon);
             doneIndicator = itemView.findViewById(R.id.done_indicator);
+            btnInfo = itemView.findViewById(R.id.btn_info);
             header = itemView.findViewById(R.id.exercise_header);
             content = itemView.findViewById(R.id.exercise_content);
             setsContainer = itemView.findViewById(R.id.sets_container);
+            infoSection = itemView.findViewById(R.id.info_section);
+            infoCategory = itemView.findViewById(R.id.info_category);
+            infoNote = itemView.findViewById(R.id.info_note);
+            infoLink = itemView.findViewById(R.id.info_link);
         }
 
         void bind(SessionViewModel.SessionExerciseEntry entry, final int exerciseIndex) {
@@ -109,7 +147,30 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
             content.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
             expandIcon.setRotation(isExpanded ? 180f : 0f);
 
-            updateDoneIndicator(entry);
+            doneIndicator.setVisibility(areAllSetsDone(entry) ? View.VISIBLE : View.GONE);
+
+            boolean hasInfo = !TextUtils.isEmpty(entry.exercise.getCategory())
+                    || !TextUtils.isEmpty(entry.exercise.getNote())
+                    || !TextUtils.isEmpty(entry.exercise.getExampleLink());
+
+            btnInfo.setVisibility(hasInfo ? View.VISIBLE : View.GONE);
+
+            boolean infoOpen = infoOpenPositions.contains(exerciseIndex);
+            bindInfoSection(entry.exercise, infoOpen);
+            btnInfo.setText(infoOpen ? "▴ Hide Info" : "▾ Show Info");
+
+            btnInfo.setOnClickListener(v -> {
+                if (infoOpenPositions.contains(exerciseIndex)) {
+                    infoOpenPositions.remove(exerciseIndex);
+                    infoSection.setVisibility(View.GONE);
+                    btnInfo.setText("▾ Show Info");
+                } else {
+                    infoOpenPositions.add(exerciseIndex);
+                    bindInfoSection(entry.exercise, true);
+                    infoSection.setVisibility(View.VISIBLE);
+                    btnInfo.setText("▴ Hide Info");
+                }
+            });
 
             header.setOnClickListener(v -> {
                 if (expandedPositions.contains(exerciseIndex)) {
@@ -164,22 +225,42 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
                 checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     float w = pickerIndexToWeight(weightPicker.getValue());
                     viewModel.updateSet(exerciseIndex, setIndex, w, repsPicker.getValue(), isChecked);
-                    updateDoneIndicator(entry);
+
+                    if (areAllSetsDone(entry)) {
+                        doneIndicator.setVisibility(View.VISIBLE);
+                        autoAdvance(exerciseIndex);
+                    } else {
+                        doneIndicator.setVisibility(View.GONE);
+                    }
                 });
 
                 setsContainer.addView(setRow);
             }
         }
 
-        private void updateDoneIndicator(SessionViewModel.SessionExerciseEntry entry) {
-            boolean allDone = !entry.sets.isEmpty();
-            for (SessionViewModel.SetEntry set : entry.sets) {
-                if (!set.isCompleted) {
-                    allDone = false;
-                    break;
-                }
+        private void bindInfoSection(ExerciseTemplate exercise, boolean visible) {
+            infoSection.setVisibility(visible ? View.VISIBLE : View.GONE);
+
+            if (!TextUtils.isEmpty(exercise.getCategory())) {
+                infoCategory.setText("Category: " + exercise.getCategory());
+                infoCategory.setVisibility(View.VISIBLE);
+            } else {
+                infoCategory.setVisibility(View.GONE);
             }
-            doneIndicator.setVisibility(allDone ? View.VISIBLE : View.GONE);
+
+            if (!TextUtils.isEmpty(exercise.getNote())) {
+                infoNote.setText("Note: " + exercise.getNote());
+                infoNote.setVisibility(View.VISIBLE);
+            } else {
+                infoNote.setVisibility(View.GONE);
+            }
+
+            if (!TextUtils.isEmpty(exercise.getExampleLink())) {
+                infoLink.setText(exercise.getExampleLink());
+                infoLink.setVisibility(View.VISIBLE);
+            } else {
+                infoLink.setVisibility(View.GONE);
+            }
         }
     }
 }

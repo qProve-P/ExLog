@@ -82,7 +82,7 @@ public class WorkoutAdapter extends ListAdapter<WorkoutTemplate, WorkoutAdapter.
 
         void bind(WorkoutTemplate workout) {
             nameText.setText(workout.getName());
-            countText.setText("Tap Edit to modify");
+            countText.setVisibility(View.GONE);
         }
     }
 }
