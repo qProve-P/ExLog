@@ -58,7 +58,7 @@ public class SessionDetailAdapter extends RecyclerView.Adapter<SessionDetailAdap
 
             if (entry.sets.isEmpty()) {
                 TextView emptyText = new TextView(itemView.getContext());
-                emptyText.setText("Not Completed");
+                emptyText.setText(itemView.getContext().getString(R.string.not_completed));
                 emptyText.setTypeface(null, android.graphics.Typeface.ITALIC);
                 emptyText.setTextColor(androidx.core.content.ContextCompat.getColor(itemView.getContext(),
                         android.R.color.darker_gray));
@@ -75,10 +75,10 @@ public class SessionDetailAdapter extends RecyclerView.Adapter<SessionDetailAdap
                     numText.setText(String.valueOf(set.getSetNumber()));
 
                     if (set.getWeight() < 0 || set.getReps() < 0) {
-                        weightText.setText("-");
+                        weightText.setText(itemView.getContext().getString(R.string.dash));
                         weightText.setTextColor(androidx.core.content.ContextCompat.getColor(itemView.getContext(),
                                 android.R.color.darker_gray));
-                        repsText.setText("-");
+                        repsText.setText(itemView.getContext().getString(R.string.dash));
                         repsText.setTextColor(androidx.core.content.ContextCompat.getColor(itemView.getContext(),
                                 android.R.color.darker_gray));
                     } else {

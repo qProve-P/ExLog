@@ -24,7 +24,7 @@
             android:id="@+id/btn_pause_resume"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pause"
+            android:text="@string/pause"
             app:icon="@android:drawable/ic_media_pause"
             style="@style/Widget.Material3.Button.TonalButton" />
 
@@ -32,7 +32,7 @@
             android:id="@+id/session_timer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="00:00"
+            android:text="@string/timer_default"
             android:textSize="32sp"
             android:textStyle="bold"
             android:paddingHorizontal="24dp" />

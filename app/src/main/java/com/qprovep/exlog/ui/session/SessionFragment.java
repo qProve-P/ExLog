@@ -90,10 +90,10 @@ public class SessionFragment extends Fragment {
 
         viewModel.isTimerPaused().observe(getViewLifecycleOwner(), paused -> {
             if (paused != null && paused) {
-                pauseResumeBtn.setText("Resume");
+                pauseResumeBtn.setText(getString(R.string.resume));
                 pauseResumeBtn.setIconResource(android.R.drawable.ic_media_play);
             } else {
-                pauseResumeBtn.setText("Pause");
+                pauseResumeBtn.setText(getString(R.string.pause));
                 pauseResumeBtn.setIconResource(android.R.drawable.ic_media_pause);
             }
         });

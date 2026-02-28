@@ -73,7 +73,7 @@ public class StartWorkoutAdapter extends ListAdapter<WorkoutTemplate, StartWorko
 
         void bind(WorkoutTemplate workout) {
             nameText.setText(workout.getName());
-            infoText.setText("Tap Start to begin session");
+            infoText.setText(itemView.getContext().getString(R.string.tap_start_hint));
         }
     }
 }

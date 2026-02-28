@@ -33,7 +33,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="SET"
+                android:text="@string/header_set"
                 android:textStyle="bold"
                 android:textSize="12sp"
                 android:textAlignment="center" />
@@ -42,7 +42,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:text="WEIGHT"
+                android:text="@string/header_weight"
                 android:textStyle="bold"
                 android:textSize="12sp"
                 android:textAlignment="center" />
@@ -51,7 +51,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:text="REPS"
+                android:text="@string/header_reps"
                 android:textStyle="bold"
                 android:textSize="12sp"
                 android:textAlignment="center" />

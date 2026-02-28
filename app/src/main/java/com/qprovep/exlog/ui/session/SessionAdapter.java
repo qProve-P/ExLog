@@ -163,12 +163,12 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
                 if (infoOpenPositions.contains(exerciseIndex)) {
                     infoOpenPositions.remove(exerciseIndex);
                     infoSection.setVisibility(View.GONE);
-                    btnInfo.setText("▾ Show Info");
+                    btnInfo.setText(itemView.getContext().getString(R.string.show_info));
                 } else {
                     infoOpenPositions.add(exerciseIndex);
                     bindInfoSection(entry.exercise, true);
                     infoSection.setVisibility(View.VISIBLE);
-                    btnInfo.setText("▴ Hide Info");
+                    btnInfo.setText(itemView.getContext().getString(R.string.hide_info));
                 }
             });
 

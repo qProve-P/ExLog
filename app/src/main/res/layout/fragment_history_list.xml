@@ -19,7 +19,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Filter by date"
+            android:text="@string/filter_by_date"
             app:icon="@android:drawable/ic_menu_my_calendar" />
 
         <com.google.android.material.button.MaterialButton
@@ -27,7 +27,7 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Clear"
+            android:text="@string/clear"
             android:visibility="gone" />
 
     </LinearLayout>
@@ -43,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="No past sessions found"
+        android:text="@string/no_past_sessions"
         android:textAppearance="?attr/textAppearanceBodyLarge"
         android:visibility="visible"
         android:layout_marginTop="32dp" />

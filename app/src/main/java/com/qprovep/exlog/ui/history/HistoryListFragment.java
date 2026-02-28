@@ -61,7 +61,7 @@ public class HistoryListFragment extends Fragment {
 
         btnClearDate.setOnClickListener(v -> {
             viewModel.setSelectedDate(null);
-            btnPickDate.setText("Filter by date");
+            btnPickDate.setText(getString(R.string.filter_by_date));
             btnClearDate.setVisibility(View.GONE);
         });
 

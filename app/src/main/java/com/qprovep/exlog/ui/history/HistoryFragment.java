@@ -33,9 +33,9 @@ public class HistoryFragment extends Fragment {
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             if (position == 0) {
-                tab.setText("History");
+                tab.setText(getString(R.string.tab_history));
             } else {
-                tab.setText("Graph");
+                tab.setText(getString(R.string.tab_graph));
             }
         }).attach();
     }

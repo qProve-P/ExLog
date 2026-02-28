@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:text="✓"
+                android:text="@string/checkmark"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary"
@@ -63,7 +63,7 @@
                 android:id="@+id/btn_info"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:text="ℹ Info"
+                android:text="@string/info_label"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="12sp"
                 android:layout_marginBottom="8dp"
@@ -125,7 +125,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="SET"
+                    android:text="@string/header_set"
                     android:textStyle="bold"
                     android:textSize="12sp"
                     android:textAlignment="center" />
@@ -134,7 +134,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="WEIGHT"
+                    android:text="@string/header_weight"
                     android:textStyle="bold"
                     android:textSize="12sp"
                     android:textAlignment="center" />
@@ -143,7 +143,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="REPS"
+                    android:text="@string/header_reps"
                     android:textStyle="bold"
                     android:textSize="12sp"
                     android:textAlignment="center" />
@@ -152,7 +152,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="DONE"
+                    android:text="@string/header_done"
                     android:textStyle="bold"
                     android:textSize="12sp"
                     android:textAlignment="center" />
