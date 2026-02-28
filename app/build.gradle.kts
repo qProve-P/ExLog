@@ -59,6 +59,9 @@ dependencies {
     // Gson (for export/import)
     implementation(libs.gson)
 
+    // Charting
+    implementation(libs.mpchart)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

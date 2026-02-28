@@ -32,9 +32,21 @@ public interface SetLogDao {
     @Query("SELECT * FROM set_logs WHERE exerciseTemplateId = :exerciseId ORDER BY sessionId, setNumber ASC")
     List<SetLog> getSetLogsForExercise(int exerciseId);
 
-    @Query("SELECT sl.* FROM set_logs sl " +
+    @Query("SELECT sl.*, s.date FROM set_logs sl " +
             "INNER JOIN sessions s ON sl.sessionId = s.id " +
             "WHERE sl.exerciseTemplateId = :exerciseId " +
             "ORDER BY s.date ASC, sl.setNumber ASC")
-    LiveData<List<SetLog>> getSetLogsForExerciseOverTime(int exerciseId);
+    LiveData<List<SetLogWithDate>> getSetLogsWithDateForExercise(int exerciseId);
+
+    @Query("SELECT sl.*, s.date FROM set_logs sl " +
+            "INNER JOIN sessions s ON sl.sessionId = s.id " +
+            "WHERE sl.exerciseTemplateId = :exerciseId AND s.date >= :startDateMs " +
+            "ORDER BY s.date ASC, sl.setNumber ASC")
+    List<SetLogWithDate> getSetLogsWithDateForExerciseSync(int exerciseId, long startDateMs);
+
+    class SetLogWithDate {
+        @androidx.room.Embedded
+        public SetLog setLog;
+        public long date;
+    }
 }

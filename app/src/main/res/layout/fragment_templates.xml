@@ -5,37 +5,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/toggle_group"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/templates_tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp"
-        app:singleSelection="true"
-        app:selectionRequired="true"
-        app:checkedButton="@id/btn_workouts">
+        app:tabMode="fixed"
+        app:tabGravity="fill" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_exercises"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/tab_exercises"
-            style="@style/Widget.Material3.Button.OutlinedButton" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_workouts"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/tab_workouts"
-            style="@style/Widget.Material3.Button.OutlinedButton" />
-
-    </com.google.android.material.button.MaterialButtonToggleGroup>
-
-    <FrameLayout
-        android:id="@+id/templates_container"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/templates_view_pager"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>

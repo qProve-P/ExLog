@@ -37,4 +37,24 @@ public interface SessionDao {
     @Transaction
     @Query("SELECT * FROM sessions WHERE id = :id")
     LiveData<SessionWithSetLogs> getSessionWithSetLogs(int id);
+
+    @Query("SELECT s.id as sessionId, w.name as workoutName, s.date, s.durationMs " +
+            "FROM sessions s " +
+            "INNER JOIN workout_templates w ON s.workoutTemplateId = w.id " +
+            "ORDER BY s.date DESC")
+    LiveData<List<SessionHistoryItem>> getSessionHistory();
+
+    @Query("SELECT s.id as sessionId, w.name as workoutName, s.date, s.durationMs " +
+            "FROM sessions s " +
+            "INNER JOIN workout_templates w ON s.workoutTemplateId = w.id " +
+            "WHERE s.date BETWEEN :startDate AND :endDate " +
+            "ORDER BY s.date DESC")
+    LiveData<List<SessionHistoryItem>> getSessionHistoryByDateRange(long startDate, long endDate);
+
+    class SessionHistoryItem {
+        public int sessionId;
+        public String workoutName;
+        public long date;
+        public long durationMs;
+    }
 }
