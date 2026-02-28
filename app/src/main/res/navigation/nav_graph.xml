@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/exerciseListFragment">
+
+    <fragment
+        android:id="@+id/exerciseListFragment"
+        android:name="com.qprovep.exlog.ui.exercise.ExerciseListFragment"
+        android:label="@string/nav_exercises"
+        tools:layout="@layout/fragment_exercise_list" />
+
+    <fragment
+        android:id="@+id/workoutListFragment"
+        android:name="com.qprovep.exlog.ui.workout.WorkoutListFragment"
+        android:label="@string/nav_workouts"
+        tools:layout="@layout/fragment_workout_list">
+
+        <action
+            android:id="@+id/action_workoutList_to_workoutDetail"
+            app:destination="@id/workoutDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/workoutDetailFragment"
+        android:name="com.qprovep.exlog.ui.workout.WorkoutDetailFragment"
+        android:label="@string/edit_workout"
+        tools:layout="@layout/fragment_workout_detail">
+
+        <argument
+            android:name="workoutId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/sessionStartFragment"
+        android:name="com.qprovep.exlog.ui.session.SessionStartFragment"
+        android:label="@string/start_session"
+        tools:layout="@layout/fragment_session_start">
+
+        <action
+            android:id="@+id/action_sessionStart_to_session"
+            app:destination="@id/sessionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/sessionFragment"
+        android:name="com.qprovep.exlog.ui.session.SessionFragment"
+        android:label="@string/start_session"
+        tools:layout="@layout/fragment_session">
+
+        <argument
+            android:name="workoutId"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.qprovep.exlog.ui.history.HistoryFragment"
+        android:label="@string/session_history"
+        tools:layout="@layout/fragment_history">
+
+        <action
+            android:id="@+id/action_history_to_sessionDetail"
+            app:destination="@id/sessionDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/sessionDetailFragment"
+        android:name="com.qprovep.exlog.ui.history.SessionDetailFragment"
+        android:label="Session Detail"
+        tools:layout="@layout/fragment_session_detail">
+
+        <argument
+            android:name="sessionId"
+            app:argType="integer" />
+    </fragment>
+
+</navigation>

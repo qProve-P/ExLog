@@ -2,4 +2,24 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- ExLog Fitness Theme Colors -->
+    <color name="primary">#FF6C63</color>
+    <color name="primary_dark">#E0554D</color>
+    <color name="primary_light">#FF8A80</color>
+    <color name="secondary">#4ECDC4</color>
+    <color name="secondary_dark">#36B5AD</color>
+    <color name="background_dark">#1A1A2E</color>
+    <color name="surface_dark">#16213E</color>
+    <color name="card_dark">#0F3460</color>
+    <color name="text_primary_dark">#EAEAEA</color>
+    <color name="text_secondary_dark">#B0B0B0</color>
+    <color name="background_light">#F8F9FA</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="card_light">#FFFFFF</color>
+    <color name="text_primary_light">#1A1A2E</color>
+    <color name="text_secondary_light">#6C757D</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="divider_light">#E0E0E0</color>
+    <color name="divider_dark">#2A2A4A</color>
 </resources>
