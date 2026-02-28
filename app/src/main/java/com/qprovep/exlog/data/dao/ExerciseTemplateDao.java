@@ -34,4 +34,10 @@ public interface ExerciseTemplateDao {
 
     @Query("SELECT DISTINCT category FROM exercise_templates WHERE category IS NOT NULL AND category != '' ORDER BY category ASC")
     LiveData<List<String>> getAllCategories();
+
+    @Query("SELECT * FROM exercise_templates ORDER BY name ASC")
+    List<ExerciseTemplate> getAllExercisesSync();
+
+    @Insert
+    void insertAll(List<ExerciseTemplate> exercises);
 }

@@ -42,4 +42,10 @@ public interface WorkoutTemplateDao {
     @Transaction
     @Query("SELECT * FROM workout_templates ORDER BY name ASC")
     LiveData<List<WorkoutWithExercises>> getAllWorkoutsWithExercises();
+
+    @Query("SELECT * FROM workout_templates ORDER BY name ASC")
+    List<WorkoutTemplate> getAllWorkoutsSync();
+
+    @Insert
+    void insertAll(List<WorkoutTemplate> workouts);
 }

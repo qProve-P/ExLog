@@ -16,4 +16,9 @@
         android:icon="@drawable/ic_templates"
         android:title="@string/nav_templates" />
 
+    <item
+        android:id="@+id/nav_more"
+        android:icon="@android:drawable/ic_menu_more"
+        android:title="@string/nav_more" />
+
 </menu>

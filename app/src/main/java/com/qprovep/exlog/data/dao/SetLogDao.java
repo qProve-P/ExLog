@@ -49,4 +49,7 @@ public interface SetLogDao {
         public SetLog setLog;
         public long date;
     }
+
+    @Query("SELECT * FROM set_logs ORDER BY sessionId, exerciseTemplateId, setNumber ASC")
+    List<SetLog> getAllSetLogsSync();
 }

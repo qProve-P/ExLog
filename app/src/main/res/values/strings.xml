@@ -72,4 +72,13 @@
     <string name="tap_start_hint">Tap Start to begin session</string>
     <string name="show_info">▾ Show Info</string>
     <string name="hide_info">▴ Hide Info</string>
+    <string name="nav_more">More</string>
+    <string name="export_data">Export Data</string>
+    <string name="import_data">Import Data</string>
+    <string name="export_success">Data exported successfully</string>
+    <string name="export_failed">Export failed</string>
+    <string name="import_success">Data imported successfully</string>
+    <string name="import_failed">Import failed</string>
+    <string name="import_confirm_title">Import Data</string>
+    <string name="import_confirm_message">This will replace ALL existing data. Are you sure?</string>
 </resources>

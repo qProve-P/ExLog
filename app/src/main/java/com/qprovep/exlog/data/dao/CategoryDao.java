@@ -20,4 +20,10 @@ public interface CategoryDao {
 
     @Query("SELECT * FROM categories ORDER BY name ASC")
     LiveData<List<Category>> getAllCategories();
+
+    @Query("SELECT * FROM categories ORDER BY name ASC")
+    List<Category> getAllCategoriesSync();
+
+    @Insert
+    void insertAll(List<Category> categories);
 }

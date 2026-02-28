@@ -30,4 +30,7 @@ public interface WorkoutExerciseDao {
 
     @Query("SELECT * FROM workout_exercises WHERE workoutTemplateId = :workoutTemplateId ORDER BY orderIndex ASC")
     List<WorkoutExercise> getExercisesForWorkout(int workoutTemplateId);
+
+    @Query("SELECT * FROM workout_exercises ORDER BY workoutTemplateId, orderIndex ASC")
+    List<WorkoutExercise> getAllWorkoutExercisesSync();
 }

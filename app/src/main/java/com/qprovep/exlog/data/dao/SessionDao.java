@@ -57,4 +57,10 @@ public interface SessionDao {
         public long date;
         public long durationMs;
     }
+
+    @Query("SELECT * FROM sessions ORDER BY date DESC")
+    List<Session> getAllSessionsSync();
+
+    @Insert
+    void insertAll(List<Session> sessions);
 }
