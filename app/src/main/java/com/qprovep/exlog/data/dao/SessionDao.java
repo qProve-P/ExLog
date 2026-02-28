@@ -1,0 +1,40 @@
+package com.qprovep.exlog.data.dao;
+
+import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
+import androidx.room.Delete;
+import androidx.room.Insert;
+import androidx.room.Query;
+import androidx.room.Transaction;
+import androidx.room.Update;
+
+import com.qprovep.exlog.data.entity.Session;
+import com.qprovep.exlog.data.relation.SessionWithSetLogs;
+
+import java.util.List;
+
+@Dao
+public interface SessionDao {
+
+    @Insert
+    long insert(Session session);
+
+    @Update
+    void update(Session session);
+
+    @Delete
+    void delete(Session session);
+
+    @Query("SELECT * FROM sessions ORDER BY date DESC")
+    LiveData<List<Session>> getAllSessions();
+
+    @Query("SELECT * FROM sessions WHERE id = :id")
+    Session getById(int id);
+
+    @Query("SELECT * FROM sessions WHERE date BETWEEN :startDate AND :endDate ORDER BY date DESC")
+    LiveData<List<Session>> getSessionsByDateRange(long startDate, long endDate);
+
+    @Transaction
+    @Query("SELECT * FROM sessions WHERE id = :id")
+    LiveData<SessionWithSetLogs> getSessionWithSetLogs(int id);
+}
