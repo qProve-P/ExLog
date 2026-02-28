@@ -17,6 +17,9 @@
     <string name="add">Add</string>
     <string name="select_category">Select Category</string>
     <string name="no_category">No category</string>
+    <string name="search_exercises">Search exercises…</string>
+    <string name="filter_by_category">Filter by category</string>
+    <string name="all_categories">All categories</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>

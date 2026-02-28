@@ -37,7 +37,7 @@ public class TemplatesFragment extends Fragment {
 
         if (savedInstanceState == null) {
             getChildFragmentManager().beginTransaction()
-                    .replace(R.id.templates_container, exerciseFragment)
+                    .replace(R.id.templates_container, workoutFragment)
                     .commit();
         }
 

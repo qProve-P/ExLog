@@ -12,7 +12,7 @@
         android:padding="12dp"
         app:singleSelection="true"
         app:selectionRequired="true"
-        app:checkedButton="@id/btn_exercises">
+        app:checkedButton="@id/btn_workouts">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_exercises"

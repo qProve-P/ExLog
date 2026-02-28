@@ -22,25 +22,43 @@ public class ExercisePickerAdapter extends RecyclerView.Adapter<ExercisePickerAd
     private List<ExerciseTemplate> allExercises = new ArrayList<>();
     private List<ExerciseTemplate> filteredExercises = new ArrayList<>();
     private final Set<Integer> selectedIds = new HashSet<>();
+    private String nameQuery = "";
+    private String categoryFilter = "";
 
     public void setExercises(List<ExerciseTemplate> exercises, Set<Integer> preSelectedIds) {
         allExercises = new ArrayList<>(exercises);
-        filteredExercises = new ArrayList<>(exercises);
         selectedIds.clear();
         selectedIds.addAll(preSelectedIds);
-        notifyDataSetChanged();
+        applyFilters();
     }
 
-    public void filter(String query) {
+    public void filterByName(String query) {
+        nameQuery = query == null ? "" : query.trim().toLowerCase();
+        applyFilters();
+    }
+
+    public void filterByCategory(String category) {
+        categoryFilter = category == null ? "" : category;
+        applyFilters();
+    }
+
+    private void applyFilters() {
         filteredExercises.clear();
-        if (query == null || query.trim().isEmpty()) {
-            filteredExercises.addAll(allExercises);
-        } else {
-            String lower = query.toLowerCase().trim();
-            for (ExerciseTemplate ex : allExercises) {
-                if (ex.getName().toLowerCase().contains(lower)) {
-                    filteredExercises.add(ex);
-                }
+        for (ExerciseTemplate ex : allExercises) {
+            boolean matchesName = nameQuery.isEmpty()
+                    || ex.getName().toLowerCase().contains(nameQuery);
+
+            boolean matchesCategory;
+            if (categoryFilter.isEmpty()) {
+                matchesCategory = true;
+            } else if (categoryFilter.equals("\u2014")) {
+                matchesCategory = ex.getCategory() == null || ex.getCategory().isEmpty();
+            } else {
+                matchesCategory = categoryFilter.equals(ex.getCategory());
+            }
+
+            if (matchesName && matchesCategory) {
+                filteredExercises.add(ex);
             }
         }
         notifyDataSetChanged();
@@ -71,11 +89,13 @@ public class ExercisePickerAdapter extends RecyclerView.Adapter<ExercisePickerAd
     class ViewHolder extends RecyclerView.ViewHolder {
         private final MaterialCheckBox checkbox;
         private final TextView nameText;
+        private final TextView categoryText;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             checkbox = itemView.findViewById(R.id.checkbox);
             nameText = itemView.findViewById(R.id.exercise_name);
+            categoryText = itemView.findViewById(R.id.exercise_category);
 
             View.OnClickListener toggle = v -> {
                 int pos = getAdapterPosition();
@@ -98,6 +118,13 @@ public class ExercisePickerAdapter extends RecyclerView.Adapter<ExercisePickerAd
         void bind(ExerciseTemplate exercise) {
             nameText.setText(exercise.getName());
             checkbox.setChecked(selectedIds.contains(exercise.getId()));
+
+            if (exercise.getCategory() != null && !exercise.getCategory().isEmpty()) {
+                categoryText.setText(exercise.getCategory());
+                categoryText.setVisibility(View.VISIBLE);
+            } else {
+                categoryText.setVisibility(View.GONE);
+            }
         }
     }
 }

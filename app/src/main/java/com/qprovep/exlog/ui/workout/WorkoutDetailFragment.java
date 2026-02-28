@@ -6,6 +6,9 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -19,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.qprovep.exlog.R;
+import com.qprovep.exlog.data.AppDatabase;
 import com.qprovep.exlog.data.entity.ExerciseTemplate;
 import com.qprovep.exlog.data.entity.WorkoutExercise;
 import com.qprovep.exlog.data.entity.WorkoutTemplate;
@@ -26,6 +30,7 @@ import com.qprovep.exlog.data.entity.WorkoutTemplate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +43,7 @@ public class WorkoutDetailFragment extends Fragment {
     private int workoutId = -1;
     private WorkoutTemplate existingWorkout;
     private List<ExerciseTemplate> allExercisesCached;
+    private List<String> categoriesCached = new ArrayList<>();
 
     @Nullable
     @Override
@@ -64,6 +70,7 @@ public class WorkoutDetailFragment extends Fragment {
 
         viewModel.getAllExercises().observe(getViewLifecycleOwner(), exercises -> {
             allExercisesCached = exercises;
+            buildCategoryList();
         });
 
         if (getArguments() != null) {
@@ -96,6 +103,19 @@ public class WorkoutDetailFragment extends Fragment {
         btnSave.setOnClickListener(v -> saveWorkout());
     }
 
+    private void buildCategoryList() {
+        if (allExercisesCached == null)
+            return;
+        Set<String> cats = new LinkedHashSet<>();
+        for (ExerciseTemplate ex : allExercisesCached) {
+            if (ex.getCategory() != null && !ex.getCategory().isEmpty()) {
+                cats.add(ex.getCategory());
+            }
+        }
+        categoriesCached.clear();
+        categoriesCached.addAll(cats);
+    }
+
     private void showExercisePicker() {
         if (allExercisesCached == null || allExercisesCached.isEmpty()) {
             new MaterialAlertDialogBuilder(requireContext())
@@ -110,6 +130,7 @@ public class WorkoutDetailFragment extends Fragment {
                 .inflate(R.layout.dialog_exercise_picker, null);
 
         EditText searchEdit = dialogView.findViewById(R.id.search_exercises);
+        AutoCompleteTextView categoryFilter = dialogView.findViewById(R.id.filter_category);
         RecyclerView pickerRecycler = dialogView.findViewById(R.id.exercise_picker_recycler);
         pickerRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
 
@@ -123,6 +144,25 @@ public class WorkoutDetailFragment extends Fragment {
         pickerAdapter.setExercises(allExercisesCached, preSelected);
         pickerRecycler.setAdapter(pickerAdapter);
 
+        List<String> filterOptions = new ArrayList<>();
+        filterOptions.add(getString(R.string.all_categories));
+        filterOptions.add("\u2014");
+        filterOptions.addAll(categoriesCached);
+
+        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(
+                requireContext(), android.R.layout.simple_dropdown_item_1line, filterOptions);
+        categoryFilter.setAdapter(catAdapter);
+        categoryFilter.setText(getString(R.string.all_categories), false);
+
+        categoryFilter.setOnItemClickListener((parent, view, position, id) -> {
+            String selected = filterOptions.get(position);
+            if (selected.equals(getString(R.string.all_categories))) {
+                pickerAdapter.filterByCategory("");
+            } else {
+                pickerAdapter.filterByCategory(selected);
+            }
+        });
+
         searchEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -134,7 +174,7 @@ public class WorkoutDetailFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                pickerAdapter.filter(s.toString());
+                pickerAdapter.filterByName(s.toString());
             }
         });
 
