@@ -16,7 +16,7 @@ public class Session {
     private int id;
 
     private Integer workoutTemplateId;
-    private long date; // timestamp in millis
+    private long date;
     private long durationMs;
     private String notes;
 

@@ -1,4 +1,4 @@
-package com.qprovep.exlog.ui.workout;
+package com.qprovep.exlog.ui.session;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,22 +10,19 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
 import com.qprovep.exlog.R;
 import com.qprovep.exlog.data.entity.WorkoutTemplate;
 
-public class WorkoutAdapter extends ListAdapter<WorkoutTemplate, WorkoutAdapter.ViewHolder> {
+public class StartWorkoutAdapter extends ListAdapter<WorkoutTemplate, StartWorkoutAdapter.ViewHolder> {
 
-    public interface OnWorkoutClickListener {
-        void onWorkoutClick(WorkoutTemplate workout);
-
-        void onWorkoutStartClick(WorkoutTemplate workout);
-
-        void onWorkoutLongClick(WorkoutTemplate workout);
+    public interface OnStartClickListener {
+        void onStartClick(WorkoutTemplate workout);
     }
 
-    private final OnWorkoutClickListener listener;
+    private final OnStartClickListener listener;
 
-    public WorkoutAdapter(OnWorkoutClickListener listener) {
+    public StartWorkoutAdapter(OnStartClickListener listener) {
         super(DIFF_CALLBACK);
         this.listener = listener;
     }
@@ -46,7 +43,7 @@ public class WorkoutAdapter extends ListAdapter<WorkoutTemplate, WorkoutAdapter.
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_workout, parent, false);
+                .inflate(R.layout.item_start_workout, parent, false);
         return new ViewHolder(view);
     }
 
@@ -57,42 +54,26 @@ public class WorkoutAdapter extends ListAdapter<WorkoutTemplate, WorkoutAdapter.
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView nameText;
-        private final TextView countText;
+        private final TextView infoText;
+        private final MaterialButton startBtn;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             nameText = itemView.findViewById(R.id.workout_name);
-            countText = itemView.findViewById(R.id.workout_exercise_count);
+            infoText = itemView.findViewById(R.id.workout_info);
+            startBtn = itemView.findViewById(R.id.btn_start);
 
-            View btnEdit = itemView.findViewById(R.id.btn_edit_workout);
-            View btnStart = itemView.findViewById(R.id.btn_start_session);
-
-            btnEdit.setOnClickListener(v -> {
+            startBtn.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION) {
-                    listener.onWorkoutClick(getItem(pos));
+                    listener.onStartClick(getItem(pos));
                 }
-            });
-
-            btnStart.setOnClickListener(v -> {
-                int pos = getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION) {
-                    listener.onWorkoutStartClick(getItem(pos));
-                }
-            });
-
-            itemView.setOnLongClickListener(v -> {
-                int pos = getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION) {
-                    listener.onWorkoutLongClick(getItem(pos));
-                }
-                return true;
             });
         }
 
         void bind(WorkoutTemplate workout) {
             nameText.setText(workout.getName());
-            countText.setText("Tap to edit");
+            infoText.setText("Tap Start to begin session");
         }
     }
 }

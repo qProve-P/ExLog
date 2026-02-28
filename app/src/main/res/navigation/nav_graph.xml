@@ -23,7 +23,7 @@
         tools:layout="@layout/fragment_session">
 
         <argument
-            android:name="workoutId"
+            android:name="startWorkoutId"
             app:argType="integer" />
     </fragment>
 
@@ -58,6 +58,10 @@
         <action
             android:id="@+id/action_templates_to_workoutDetail"
             app:destination="@id/workoutDetailFragment" />
+            
+        <action
+            android:id="@+id/action_templates_to_sessionFragment"
+            app:destination="@id/sessionFragment" />
     </fragment>
 
     <fragment

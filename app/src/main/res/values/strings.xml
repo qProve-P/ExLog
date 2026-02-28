@@ -35,7 +35,7 @@
     <string name="select_workout">Select a Workout</string>
     <string name="session_history">Session History</string>
     <string name="no_exercises">No exercises yet. Tap + to add one!</string>
-    <string name="no_workouts">No workouts yet. Tap + to add one!</string>
+    <string name="no_workouts">No workouts yet. Go to Templates to add one!</string>
     <string name="no_sessions">No sessions yet. Start a workout!</string>
     <string name="weight_hint">Weight</string>
     <string name="reps_hint">Reps</string>

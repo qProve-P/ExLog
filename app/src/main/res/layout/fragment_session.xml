@@ -1,23 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="32dp">
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/session_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        app:titleTextColor="?attr/colorOnPrimary" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/session_timer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/start_session"
-        android:textSize="20sp"
+        android:text="00:00"
+        android:textAlignment="center"
+        android:textSize="32sp"
         android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/session_exercises_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp"
+        android:clipToPadding="false" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_finish_session"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Coming soon..."
-        android:textSize="16sp" />
-
+        android:layout_margin="16dp"
+        android:text="@string/finish_session"
+        app:icon="@android:drawable/ic_menu_save"
+        style="@style/Widget.Material3.Button" />
+        
 </LinearLayout>

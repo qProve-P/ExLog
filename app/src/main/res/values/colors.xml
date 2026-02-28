@@ -3,7 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- ExLog Fitness Theme Colors -->
     <color name="primary">#FF6C63</color>
     <color name="primary_dark">#E0554D</color>
     <color name="primary_light">#FF8A80</color>

@@ -33,6 +33,10 @@ public interface WorkoutTemplateDao {
 
     @Transaction
     @Query("SELECT * FROM workout_templates WHERE id = :id")
+    WorkoutWithExercises getWorkoutWithExercisesSync(int id);
+
+    @Transaction
+    @Query("SELECT * FROM workout_templates WHERE id = :id")
     LiveData<WorkoutWithExercises> getWorkoutWithExercises(int id);
 
     @Transaction
