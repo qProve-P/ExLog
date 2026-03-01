@@ -2,6 +2,11 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+import java.util.Properties
+val localProps = Properties()
+val localPropsFile = rootProject.file("local.properties")
+if (localPropsFile.exists()) { localProps.load(localPropsFile.inputStream()) }
+
 android {
     namespace = "com.qprovep.exlog"
     compileSdk {
@@ -14,22 +19,18 @@ android {
         applicationId = "com.qprovep.exlog"
         minSdk = 24
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.1.1"
+        versionCode = 4
+        versionName = "1.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
         create("release") {
-            val props = java.util.Properties()
-            val localPropsFile = rootProject.file("local.properties")
-            if (localPropsFile.exists()) props.load(localPropsFile.inputStream())
-
-            storeFile = file(props.getProperty("RELEASE_STORE_FILE", "../exlog-release-key.jks"))
-            storePassword = props.getProperty("RELEASE_STORE_PASSWORD", "")
-            keyAlias = props.getProperty("RELEASE_KEY_ALIAS", "")
-            keyPassword = props.getProperty("RELEASE_KEY_PASSWORD", "")
+            storeFile = file(localProps.getProperty("RELEASE_STORE_FILE", "../exlog-release-key.jks"))
+            storePassword = localProps.getProperty("RELEASE_STORE_PASSWORD", "")
+            keyAlias = localProps.getProperty("RELEASE_KEY_ALIAS", "")
+            keyPassword = localProps.getProperty("RELEASE_KEY_PASSWORD", "")
         }
     }
 
