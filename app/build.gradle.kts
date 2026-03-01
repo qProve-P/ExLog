@@ -20,9 +20,23 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            val props = java.util.Properties()
+            val localPropsFile = rootProject.file("local.properties")
+            if (localPropsFile.exists()) props.load(localPropsFile.inputStream())
+
+            storeFile = file(props.getProperty("RELEASE_STORE_FILE", "../exlog-release-key.jks"))
+            storePassword = props.getProperty("RELEASE_STORE_PASSWORD", "")
+            keyAlias = props.getProperty("RELEASE_KEY_ALIAS", "")
+            keyPassword = props.getProperty("RELEASE_KEY_PASSWORD", "")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
