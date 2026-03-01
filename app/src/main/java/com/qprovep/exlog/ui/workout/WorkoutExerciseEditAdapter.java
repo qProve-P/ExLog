@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -35,6 +36,15 @@ public class WorkoutExerciseEditAdapter extends RecyclerView.Adapter<WorkoutExer
     }
 
     private final List<ExerciseEntry> entries = new ArrayList<>();
+    private OnDragStartListener dragStartListener;
+
+    public interface OnDragStartListener {
+        void onDragStarted(RecyclerView.ViewHolder viewHolder);
+    }
+
+    public void setDragStartListener(OnDragStartListener listener) {
+        this.dragStartListener = listener;
+    }
 
     public void setEntries(List<ExerciseEntry> newEntries) {
         entries.clear();
@@ -51,6 +61,30 @@ public class WorkoutExerciseEditAdapter extends RecyclerView.Adapter<WorkoutExer
         return entries;
     }
 
+    public void moveUp(int position) {
+        if (position > 0 && position < entries.size()) {
+            java.util.Collections.swap(entries, position, position - 1);
+            notifyItemMoved(position, position - 1);
+            notifyItemChanged(position - 1);
+            notifyItemChanged(position);
+        }
+    }
+
+    public void moveDown(int position) {
+        if (position >= 0 && position < entries.size() - 1) {
+            java.util.Collections.swap(entries, position, position + 1);
+            notifyItemMoved(position, position + 1);
+            notifyItemChanged(position);
+            notifyItemChanged(position + 1);
+        }
+    }
+
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        java.util.Collections.swap(entries, fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+        return true;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -62,6 +96,12 @@ public class WorkoutExerciseEditAdapter extends RecyclerView.Adapter<WorkoutExer
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.bind(entries.get(position));
+        holder.dragHandle.setOnTouchListener((v, event) -> {
+            if (event.getActionMasked() == android.view.MotionEvent.ACTION_DOWN && dragStartListener != null) {
+                dragStartListener.onDragStarted(holder);
+            }
+            return false;
+        });
     }
 
     @Override
@@ -75,6 +115,7 @@ public class WorkoutExerciseEditAdapter extends RecyclerView.Adapter<WorkoutExer
         private final EditText targetSetsEdit;
         private final EditText targetRepsEdit;
         private final ImageButton removeBtn;
+        public final ImageView dragHandle;
         private ExerciseEntry currentEntry;
 
         ViewHolder(@NonNull View itemView) {
@@ -84,6 +125,7 @@ public class WorkoutExerciseEditAdapter extends RecyclerView.Adapter<WorkoutExer
             targetSetsEdit = itemView.findViewById(R.id.edit_target_sets);
             targetRepsEdit = itemView.findViewById(R.id.edit_target_reps);
             removeBtn = itemView.findViewById(R.id.btn_remove);
+            dragHandle = itemView.findViewById(R.id.drag_handle);
 
             removeBtn.setOnClickListener(v -> {
                 int pos = getAdapterPosition();

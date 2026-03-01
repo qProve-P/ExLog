@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,8 +27,11 @@ import com.qprovep.exlog.data.AppDatabase;
 import com.qprovep.exlog.data.entity.ExerciseTemplate;
 import com.qprovep.exlog.data.entity.WorkoutExercise;
 import com.qprovep.exlog.data.entity.WorkoutTemplate;
+import com.qprovep.exlog.data.relation.WorkoutExerciseWithTemplate;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -65,6 +69,27 @@ public class WorkoutDetailFragment extends Fragment {
         exerciseAdapter = new WorkoutExerciseEditAdapter();
         recyclerView.setAdapter(exerciseAdapter);
 
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+            @Override
+            public boolean isLongPressDragEnabled() {
+                return false;
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView rv,
+                    @NonNull RecyclerView.ViewHolder viewHolder,
+                    @NonNull RecyclerView.ViewHolder target) {
+                return exerciseAdapter.onItemMove(viewHolder.getAdapterPosition(),
+                        target.getAdapterPosition());
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+        exerciseAdapter.setDragStartListener(itemTouchHelper::startDrag);
         MaterialButton btnAddExercise = view.findViewById(R.id.btn_add_exercise);
         MaterialButton btnSave = view.findViewById(R.id.btn_save_workout);
 
@@ -87,7 +112,10 @@ public class WorkoutDetailFragment extends Fragment {
 
                 if (exerciseAdapter.getEntries().isEmpty() && data.exercises != null) {
                     List<WorkoutExerciseEditAdapter.ExerciseEntry> entries = new ArrayList<>();
-                    for (var weWithTemplate : data.exercises) {
+                    List<WorkoutExerciseWithTemplate> sortedExercises = new ArrayList<>(data.exercises);
+                    Collections.sort(sortedExercises, Comparator.comparingInt(
+                            e -> e.workoutExercise.getOrderIndex()));
+                    for (WorkoutExerciseWithTemplate weWithTemplate : sortedExercises) {
                         entries.add(new WorkoutExerciseEditAdapter.ExerciseEntry(
                                 weWithTemplate.exerciseTemplate,
                                 weWithTemplate.workoutExercise.getReferenceWeight(),
@@ -190,23 +218,25 @@ public class WorkoutDetailFragment extends Fragment {
     }
 
     private void applySelectedExercises(Set<Integer> selectedIds) {
-        Map<Integer, WorkoutExerciseEditAdapter.ExerciseEntry> existingMap = new HashMap<>();
+        List<WorkoutExerciseEditAdapter.ExerciseEntry> existingEntries = new ArrayList<>();
         for (WorkoutExerciseEditAdapter.ExerciseEntry entry : exerciseAdapter.getEntries()) {
-            existingMap.put(entry.exercise.getId(), entry);
-        }
-
-        List<WorkoutExerciseEditAdapter.ExerciseEntry> newEntries = new ArrayList<>();
-        for (ExerciseTemplate ex : allExercisesCached) {
-            if (selectedIds.contains(ex.getId())) {
-                WorkoutExerciseEditAdapter.ExerciseEntry existing = existingMap.get(ex.getId());
-                if (existing != null) {
-                    newEntries.add(existing);
-                } else {
-                    newEntries.add(new WorkoutExerciseEditAdapter.ExerciseEntry(ex, 0, 3, 10));
-                }
+            if (selectedIds.contains(entry.exercise.getId())) {
+                existingEntries.add(entry);
             }
         }
-        exerciseAdapter.setEntries(newEntries);
+
+        Set<Integer> existingIds = new HashSet<>();
+        for (WorkoutExerciseEditAdapter.ExerciseEntry entry : existingEntries) {
+            existingIds.add(entry.exercise.getId());
+        }
+
+        for (ExerciseTemplate ex : allExercisesCached) {
+            if (selectedIds.contains(ex.getId()) && !existingIds.contains(ex.getId())) {
+                existingEntries.add(new WorkoutExerciseEditAdapter.ExerciseEntry(ex, 0, 3, 10));
+            }
+        }
+
+        exerciseAdapter.setEntries(existingEntries);
     }
 
     private void saveWorkout() {
