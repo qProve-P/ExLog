@@ -84,4 +84,5 @@
     <string name="add_set">+ Add Set</string>
     <string name="remove_set">− Remove Set</string>
     <string name="about_app">About App</string>
+    <string name="search_hint">Search</string>
 </resources>
