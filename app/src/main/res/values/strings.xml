@@ -83,4 +83,5 @@
     <string name="import_confirm_message">This will replace ALL existing data. Are you sure?</string>
     <string name="add_set">+ Add Set</string>
     <string name="remove_set">− Remove Set</string>
+    <string name="about_app">About App</string>
 </resources>

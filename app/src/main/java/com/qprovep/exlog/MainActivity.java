@@ -83,7 +83,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showMoreDialog() {
-        String[] options = { getString(R.string.export_data), getString(R.string.import_data) };
+        String[] options = { getString(R.string.export_data), getString(R.string.import_data),
+                getString(R.string.about_app) };
         new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.nav_more)
                 .setItems(options, (dialog, which) -> {
@@ -91,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
                         launchExport();
                     } else if (which == 1) {
                         launchImport();
+                    } else if (which == 2) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/qProve-P/ExLog")));
                     }
                 })
                 .show();
