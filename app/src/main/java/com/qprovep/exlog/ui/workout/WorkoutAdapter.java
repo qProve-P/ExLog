@@ -18,7 +18,7 @@ public class WorkoutAdapter extends ListAdapter<WorkoutTemplate, WorkoutAdapter.
     public interface OnWorkoutClickListener {
         void onWorkoutClick(WorkoutTemplate workout);
 
-        void onWorkoutDeleteClick(WorkoutTemplate workout);
+        void onWorkoutLongClick(WorkoutTemplate workout);
     }
 
     private final OnWorkoutClickListener listener;
@@ -55,34 +55,38 @@ public class WorkoutAdapter extends ListAdapter<WorkoutTemplate, WorkoutAdapter.
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView nameText;
-        private final TextView countText;
+        private final TextView createdAtText;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             nameText = itemView.findViewById(R.id.workout_name);
-            countText = itemView.findViewById(R.id.workout_exercise_count);
+            createdAtText = itemView.findViewById(R.id.workout_created_at);
 
-            View btnEdit = itemView.findViewById(R.id.btn_edit_workout);
-            View btnDelete = itemView.findViewById(R.id.btn_delete_workout);
-
-            btnEdit.setOnClickListener(v -> {
+            itemView.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION) {
                     listener.onWorkoutClick(getItem(pos));
                 }
             });
 
-            btnDelete.setOnClickListener(v -> {
+            itemView.setOnLongClickListener(v -> {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION) {
-                    listener.onWorkoutDeleteClick(getItem(pos));
+                    listener.onWorkoutLongClick(getItem(pos));
                 }
+                return true;
             });
         }
 
         void bind(WorkoutTemplate workout) {
             nameText.setText(workout.getName());
-            countText.setVisibility(View.GONE);
+            if (workout.getCreatedAt() > 0) {
+                String date = java.text.DateFormat.getDateInstance().format(
+                        new java.util.Date(workout.getCreatedAt()));
+                createdAtText.setText(date);
+            } else {
+                createdAtText.setText(R.string.unknown_date);
+            }
         }
     }
 }

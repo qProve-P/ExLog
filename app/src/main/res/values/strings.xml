@@ -86,4 +86,5 @@
     <string name="about_app">About App</string>
     <string name="search_hint">Search</string>
     <string name="drag_handle">Drag to reorder</string>
+    <string name="unknown_date">Unknown date</string>
 </resources>

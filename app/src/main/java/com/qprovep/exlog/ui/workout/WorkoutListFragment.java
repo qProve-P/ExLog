@@ -66,7 +66,7 @@ public class WorkoutListFragment extends Fragment implements WorkoutAdapter.OnWo
     }
 
     @Override
-    public void onWorkoutDeleteClick(WorkoutTemplate workout) {
+    public void onWorkoutLongClick(WorkoutTemplate workout) {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.confirm_delete)
                 .setMessage(workout.getName())

@@ -10,9 +10,11 @@ public class WorkoutTemplate {
     private int id;
 
     private String name;
+    private long createdAt;
 
     public WorkoutTemplate(String name) {
         this.name = name;
+        this.createdAt = System.currentTimeMillis();
     }
 
     public int getId() {
@@ -29,5 +31,13 @@ public class WorkoutTemplate {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -21,36 +21,12 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/workout_exercise_count"
+            android:id="@+id/workout_created_at"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textSize="14sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal"
-            android:gravity="end">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_edit_workout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="@string/edit_workout"
-                style="@style/Widget.Material3.Button.TextButton" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_delete_workout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/delete"
-                app:icon="@android:drawable/ic_menu_delete"
-                style="@style/Widget.Material3.Button.TextButton" />
-
-        </LinearLayout>
+            android:textSize="12sp"
+            android:alpha="0.6" />
 
     </LinearLayout>
 
