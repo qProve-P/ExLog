@@ -53,7 +53,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="@string/finish_session"
-        app:icon="@android:drawable/ic_menu_save"
         style="@style/Widget.Material3.Button" />
 
 </LinearLayout>
