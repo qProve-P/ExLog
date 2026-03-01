@@ -143,6 +143,33 @@ public class SessionViewModel extends AndroidViewModel {
         set.isCompleted = isCompleted;
     }
 
+    public void addSet(int exerciseIndex) {
+        List<SessionExerciseEntry> current = sessionExercises.getValue();
+        if (current == null)
+            return;
+
+        SessionExerciseEntry entry = current.get(exerciseIndex);
+        SetEntry lastSet = entry.sets.get(entry.sets.size() - 1);
+        entry.sets.add(new SetEntry(entry.sets.size() + 1, lastSet.weight, lastSet.reps));
+        sessionExercises.postValue(current);
+    }
+
+    public void removeSet(int exerciseIndex) {
+        List<SessionExerciseEntry> current = sessionExercises.getValue();
+        if (current == null)
+            return;
+
+        SessionExerciseEntry entry = current.get(exerciseIndex);
+        if (entry.sets.size() <= 1)
+            return;
+
+        entry.sets.remove(entry.sets.size() - 1);
+        for (int i = 0; i < entry.sets.size(); i++) {
+            entry.sets.get(i).setNumber = i + 1;
+        }
+        sessionExercises.postValue(current);
+    }
+
     public void finishSession(String notes) {
         if (!isTimerRunning)
             return;

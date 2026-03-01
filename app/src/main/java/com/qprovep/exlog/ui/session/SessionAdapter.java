@@ -117,6 +117,8 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
         private final ImageView expandIcon;
         private final TextView doneIndicator;
         private final MaterialButton btnInfo;
+        private final MaterialButton btnAddSet;
+        private final MaterialButton btnRemoveSet;
         private final LinearLayout header;
         private final LinearLayout content;
         private final LinearLayout setsContainer;
@@ -131,6 +133,8 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
             expandIcon = itemView.findViewById(R.id.expand_icon);
             doneIndicator = itemView.findViewById(R.id.done_indicator);
             btnInfo = itemView.findViewById(R.id.btn_info);
+            btnAddSet = itemView.findViewById(R.id.btn_add_set);
+            btnRemoveSet = itemView.findViewById(R.id.btn_remove_set);
             header = itemView.findViewById(R.id.exercise_header);
             content = itemView.findViewById(R.id.exercise_content);
             setsContainer = itemView.findViewById(R.id.sets_container);
@@ -236,6 +240,9 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
 
                 setsContainer.addView(setRow);
             }
+
+            btnAddSet.setOnClickListener(v -> viewModel.addSet(exerciseIndex));
+            btnRemoveSet.setOnClickListener(v -> viewModel.removeSet(exerciseIndex));
         }
 
         private void bindInfoSection(ExerciseTemplate exercise, boolean visible) {
