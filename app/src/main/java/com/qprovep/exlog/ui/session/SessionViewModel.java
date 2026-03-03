@@ -139,8 +139,44 @@ public class SessionViewModel extends AndroidViewModel {
 
         SetEntry set = current.get(exerciseIndex).sets.get(setIndex);
         set.weight = weight;
+        set.weight = weight;
         set.reps = reps;
         set.isCompleted = isCompleted;
+    }
+
+    public void addExercise(ExerciseTemplate exercise) {
+        List<SessionExerciseEntry> current = sessionExercises.getValue();
+        if (current == null) return;
+
+        List<SetEntry> initialSets = new ArrayList<>();
+        initialSets.add(new SetEntry(1, 0f, 0));
+        
+        current.add(new SessionExerciseEntry(exercise, initialSets));
+        sessionExercises.postValue(current);
+    }
+
+    public void removeExercise(int exerciseIndex) {
+        List<SessionExerciseEntry> current = sessionExercises.getValue();
+        if (current == null || exerciseIndex < 0 || exerciseIndex >= current.size()) return;
+
+        current.remove(exerciseIndex);
+        sessionExercises.postValue(current);
+    }
+
+    public void swapExercises(int fromPosition, int toPosition) {
+        List<SessionExerciseEntry> current = sessionExercises.getValue();
+        if (current == null || fromPosition < 0 || toPosition < 0 || 
+            fromPosition >= current.size() || toPosition >= current.size()) return;
+
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                java.util.Collections.swap(current, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                java.util.Collections.swap(current, i, i - 1);
+            }
+        }
     }
 
     public void addSet(int exerciseIndex) {
@@ -179,13 +215,7 @@ public class SessionViewModel extends AndroidViewModel {
             timerThread.interrupt();
         }
 
-        long durationMs;
-        if (isPaused) {
-            durationMs = accumulatedMs;
-        } else {
-            durationMs = accumulatedMs + (SystemClock.elapsedRealtime() - startTimeMillis);
-        }
-
+        long durationMs = calculateDuration();
         WorkoutTemplate template = currentWorkout.getValue();
         List<SessionExerciseEntry> entries = sessionExercises.getValue();
 
@@ -193,22 +223,7 @@ public class SessionViewModel extends AndroidViewModel {
             return;
 
         executor.execute(() -> {
-            Session session = new Session(template.getId(), new Date().getTime(), durationMs, notes);
-            long sessionId = sessionDao.insert(session);
-
-            List<SetLog> logsToSave = new ArrayList<>();
-            for (SessionExerciseEntry entry : entries) {
-                for (SetEntry set : entry.sets) {
-                    if (set.isCompleted) {
-                        logsToSave.add(new SetLog((int) sessionId, entry.exercise.getId(), set.setNumber, set.reps,
-                                set.weight));
-                    }
-                }
-            }
-
-            if (!logsToSave.isEmpty()) {
-                setLogDao.insertAll(logsToSave);
-            }
+            saveSessionInternal(template, entries, durationMs, notes);
 
             isPaused = false;
             accumulatedMs = 0;
@@ -217,6 +232,64 @@ public class SessionViewModel extends AndroidViewModel {
             elapsedTime.postValue(0L);
             timerPaused.postValue(false);
         });
+    }
+
+    public void finishSessionSync(String notes) {
+        if (!isTimerRunning && accumulatedMs == 0)
+            return;
+
+        isTimerRunning = false;
+        if (timerThread != null) {
+            timerThread.interrupt();
+        }
+
+        long durationMs = calculateDuration();
+        WorkoutTemplate template = currentWorkout.getValue();
+        List<SessionExerciseEntry> entries = sessionExercises.getValue();
+
+        if (template == null || entries == null)
+            return;
+
+        java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+
+        executor.execute(() -> {
+            try {
+                saveSessionInternal(template, entries, durationMs, notes);
+            } finally {
+                latch.countDown();
+            }
+        });
+
+        try {
+            latch.await(2, java.util.concurrent.TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private long calculateDuration() {
+        if (isPaused || startTimeMillis == 0) {
+            return accumulatedMs;
+        }
+        return accumulatedMs + (android.os.SystemClock.elapsedRealtime() - startTimeMillis);
+    }
+
+    private void saveSessionInternal(WorkoutTemplate template, List<SessionExerciseEntry> entries, long durationMs, String notes) {
+        Session session = new Session(template.getId(), new java.util.Date().getTime(), durationMs, notes);
+        long sessionId = sessionDao.insert(session);
+
+        List<SetLog> logsToSave = new ArrayList<>();
+        for (SessionExerciseEntry entry : entries) {
+            for (SetEntry set : entry.sets) {
+                if (set.isCompleted) {
+                    logsToSave.add(new SetLog((int) sessionId, entry.exercise.getId(), set.setNumber, set.reps, set.weight));
+                }
+            }
+        }
+
+        if (!logsToSave.isEmpty()) {
+            setLogDao.insertAll(logsToSave);
+        }
     }
 
     public void discardSession() {
@@ -235,6 +308,9 @@ public class SessionViewModel extends AndroidViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
+        if (isTimerRunning || accumulatedMs > 0) {
+            finishSessionSync("Auto-saved on exit");
+        }
         isTimerRunning = false;
         if (timerThread != null)
             timerThread.interrupt();

@@ -141,11 +141,9 @@ public class ExerciseListFragment extends Fragment implements ExerciseAdapter.On
                     if (exercise == null) {
                         viewModel.insert(new ExerciseTemplate(name, category, note, link));
                     } else {
-                        exercise.setName(name);
-                        exercise.setCategory(category);
-                        exercise.setNote(note);
-                        exercise.setExampleLink(link);
-                        viewModel.update(exercise);
+                        ExerciseTemplate updated = new ExerciseTemplate(name, category, note, link);
+                        updated.setId(exercise.getId());
+                        viewModel.update(updated);
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)

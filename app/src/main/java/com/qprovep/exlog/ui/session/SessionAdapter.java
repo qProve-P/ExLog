@@ -30,6 +30,20 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
     private final Set<Integer> infoOpenPositions = new HashSet<>();
     private boolean firstBindDone = false;
 
+    public interface OnDragStartListener {
+        void onDragStarted(RecyclerView.ViewHolder viewHolder);
+    }
+    private OnDragStartListener dragStartListener;
+
+    public void setDragStartListener(OnDragStartListener dragStartListener) {
+        this.dragStartListener = dragStartListener;
+    }
+
+    public void onItemMove(int fromPosition, int toPosition) {
+        viewModel.swapExercises(fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
     private static final float WEIGHT_STEP = 0.5f;
     private static final float WEIGHT_MAX = 200f;
     private static final int WEIGHT_PICKER_MAX = (int) (WEIGHT_MAX / WEIGHT_STEP);
@@ -116,6 +130,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
         private final TextView nameText;
         private final ImageView expandIcon;
         private final TextView doneIndicator;
+        private final ImageView dragHandle;
         private final MaterialButton btnInfo;
         private final MaterialButton btnAddSet;
         private final MaterialButton btnRemoveSet;
@@ -132,6 +147,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
             nameText = itemView.findViewById(R.id.exercise_name);
             expandIcon = itemView.findViewById(R.id.expand_icon);
             doneIndicator = itemView.findViewById(R.id.done_indicator);
+            dragHandle = itemView.findViewById(R.id.drag_handle);
             btnInfo = itemView.findViewById(R.id.btn_info);
             btnAddSet = itemView.findViewById(R.id.btn_add_set);
             btnRemoveSet = itemView.findViewById(R.id.btn_remove_set);
@@ -146,6 +162,13 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
 
         void bind(SessionViewModel.SessionExerciseEntry entry, final int exerciseIndex) {
             nameText.setText(entry.exercise.getName());
+
+            dragHandle.setOnTouchListener((v, event) -> {
+                if (event.getActionMasked() == android.view.MotionEvent.ACTION_DOWN && dragStartListener != null) {
+                    dragStartListener.onDragStarted(this);
+                }
+                return false;
+            });
 
             boolean isExpanded = expandedPositions.contains(exerciseIndex);
             content.setVisibility(isExpanded ? View.VISIBLE : View.GONE);

@@ -25,6 +25,9 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
@@ -100,10 +103,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void launchExport() {
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+        String formattedDate = dateFormat.format(date);
+
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("application/json");
-        intent.putExtra(Intent.EXTRA_TITLE, "exlog_backup.json");
+        intent.putExtra(Intent.EXTRA_TITLE, "exlog_backup_" + formattedDate + ".json");
         exportLauncher.launch(intent);
     }
 

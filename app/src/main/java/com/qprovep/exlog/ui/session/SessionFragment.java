@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,15 +21,33 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.qprovep.exlog.R;
+import com.qprovep.exlog.data.entity.ExerciseTemplate;
 import com.qprovep.exlog.data.entity.WorkoutTemplate;
+import com.qprovep.exlog.ui.session.SessionViewModel.SessionExerciseEntry;
+import com.qprovep.exlog.ui.workout.ExercisePickerAdapter;
+import com.qprovep.exlog.ui.workout.WorkoutViewModel;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class SessionFragment extends Fragment {
 
     private SessionViewModel viewModel;
     private SessionAdapter adapter;
     private TextView timerText;
+    
+    private List<ExerciseTemplate> allExercisesCached;
+    private final List<String> categoriesCached = new ArrayList<>();
 
     @Nullable
     @Override
@@ -42,6 +61,11 @@ public class SessionFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(requireActivity()).get(SessionViewModel.class);
+        WorkoutViewModel workoutViewModel = new ViewModelProvider(this).get(WorkoutViewModel.class);
+        workoutViewModel.getAllExercises().observe(getViewLifecycleOwner(), exercises -> {
+            allExercisesCached = exercises;
+            buildCategoryList();
+        });
 
         MaterialToolbar toolbar = view.findViewById(R.id.session_toolbar);
         timerText = view.findViewById(R.id.session_timer);
@@ -52,6 +76,42 @@ public class SessionFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new SessionAdapter(viewModel);
         recyclerView.setAdapter(adapter);
+
+        ItemTouchHelper touchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                ItemTouchHelper.START | ItemTouchHelper.END
+        ) {
+            @Override
+            public boolean isLongPressDragEnabled() {
+                return false;
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView,
+                    @NonNull RecyclerView.ViewHolder viewHolder,
+                    @NonNull RecyclerView.ViewHolder target) {
+                adapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                return true;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                viewModel.removeExercise(position);
+            }
+        });
+        touchHelper.attachToRecyclerView(recyclerView);
+
+        adapter.setDragStartListener(touchHelper::startDrag);
+
+        toolbar.inflateMenu(R.menu.menu_session);
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_add_exercise) {
+                showExercisePicker();
+                return true;
+            }
+            return false;
+        });
 
         requireActivity().getOnBackPressedDispatcher().addCallback(
                 getViewLifecycleOwner(), new OnBackPressedCallback(true) {
@@ -143,5 +203,104 @@ public class SessionFragment extends Fragment {
                 })
                 .setNegativeButton("Stay", null)
                 .show();
+    }
+
+    private void buildCategoryList() {
+        if (allExercisesCached == null) return;
+        Set<String> cats = new LinkedHashSet<>();
+        for (ExerciseTemplate ex : allExercisesCached) {
+            if (ex.getCategory() != null && !ex.getCategory().isEmpty()) {
+                cats.add(ex.getCategory());
+            }
+        }
+        categoriesCached.clear();
+        categoriesCached.addAll(cats);
+    }
+
+    private void showExercisePicker() {
+        if (allExercisesCached == null || allExercisesCached.isEmpty()) {
+            new MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.pick_exercises)
+                    .setMessage(R.string.no_exercises)
+                    .setPositiveButton(R.string.cancel, null)
+                    .show();
+            return;
+        }
+
+        View dialogView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.dialog_exercise_picker, null);
+
+        EditText searchEdit = dialogView.findViewById(R.id.search_exercises);
+        AutoCompleteTextView categoryFilter = dialogView.findViewById(R.id.filter_category);
+        RecyclerView pickerRecycler = dialogView.findViewById(R.id.exercise_picker_recycler);
+        pickerRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        ExercisePickerAdapter pickerAdapter = new ExercisePickerAdapter();
+
+        Set<Integer> preSelected = new HashSet<>();
+        List<SessionExerciseEntry> currentEntries = viewModel.getSessionExercises().getValue();
+        if (currentEntries != null) {
+            for (SessionExerciseEntry entry : currentEntries) {
+                preSelected.add(entry.exercise.getId());
+            }
+        }
+
+        pickerAdapter.setExercises(allExercisesCached, preSelected);
+        pickerRecycler.setAdapter(pickerAdapter);
+
+        List<String> filterOptions = new ArrayList<>();
+        filterOptions.add(getString(R.string.all_categories));
+        filterOptions.add("\u2014");
+        filterOptions.addAll(categoriesCached);
+
+        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(
+                requireContext(), android.R.layout.simple_dropdown_item_1line, filterOptions);
+        categoryFilter.setAdapter(catAdapter);
+        categoryFilter.setText(getString(R.string.all_categories), false);
+
+        categoryFilter.setOnItemClickListener((parent, v, position, id) -> {
+            String selected = filterOptions.get(position);
+            if (selected.equals(getString(R.string.all_categories))) {
+                pickerAdapter.filterByCategory("");
+            } else {
+                pickerAdapter.filterByCategory(selected);
+            }
+        });
+
+        searchEdit.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                pickerAdapter.filterByName(s.toString());
+            }
+        });
+
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.pick_exercises)
+                .setView(dialogView)
+                .setPositiveButton(R.string.save, (dialog, which) -> {
+                    Set<Integer> selectedIds = pickerAdapter.getSelectedIds();
+                    applySelectedExercises(selectedIds, preSelected);
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void applySelectedExercises(Set<Integer> selectedIds, Set<Integer> previouslySelectedIds) {
+        RecyclerView recyclerView = getView() != null ? getView().findViewById(R.id.session_exercises_recycler) : null;
+        for (ExerciseTemplate ex : allExercisesCached) {
+            if (selectedIds.contains(ex.getId()) && !previouslySelectedIds.contains(ex.getId())) {
+                viewModel.addExercise(ex);
+            }
+        }
+        
+        if (recyclerView != null) {
+            int size = viewModel.getSessionExercises().getValue() != null ? 
+                    viewModel.getSessionExercises().getValue().size() : 0;
+            if (size > 0) {
+                recyclerView.smoothScrollToPosition(size);
+            }
+        }
     }
 }

@@ -106,7 +106,6 @@ public class GraphViewModel extends AndroidViewModel {
         this.customStartTime = startMillis;
         this.customEndTime = endMillis;
         setTimePeriodFilter(TimePeriod.CUSTOM);
-        // Force re-trigger if already CUSTOM
         if (timePeriodFilter.getValue() == TimePeriod.CUSTOM) {
             updateTrigger();
         }
