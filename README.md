@@ -11,6 +11,8 @@
 
 <br/>
 
+> ⚠️ **Notice**: This application is currently in active development. Features, database schemas, and functionality are subject to change at any time.
+
 ## 📋 Overview
 
 ExLog is an offline-first fitness logging application designed to remove friction from your workouts. Build your template routines, tap start, and log your progress without any cloud reliance or subscriptions. Your data is yours.
